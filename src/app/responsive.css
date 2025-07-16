@@ -1,0 +1,64 @@
+@media only screen and (min-width: 768px) {
+    .mobile {
+        width: 20%;
+        height: 100px;
+        display: block;
+        background: #09c;
+    }
+
+    .view-lg {
+        display: none;
+    }
+
+    .view-sm {
+        display: none !important;
+    }
+}
+
+
+@media only screen and (min-width: 1024px) {
+
+    .view-lg {
+        display: block !important;
+    }
+
+    .view-sm {
+        display: none !important;
+    }
+
+    .margin-x-50a{margin-left: 50px !important; margin-right: 50px !important;}
+
+    .font-50 {
+        font-size: 50px;
+    }
+
+    .font-54 {
+        font-size: 54px;
+        line-height: 60px;
+    }
+
+    .min-10 {
+        margin-left: -10%;
+    }
+
+    .padding-t-150 {padding-top: 100px !important;}
+
+    /* WIDTH PERSEN  */
+    .width-75p{ width: 25% !important;}
+
+
+    /* HEIGHT VH  */
+    .hg-95p {
+    height: 60vh !important;
+    }
+
+    .hg-100p {
+    height: 100vh !important;
+    }
+
+    .margin-l-min2 {
+        margin-left: -2.5%;
+    }
+
+
+}
