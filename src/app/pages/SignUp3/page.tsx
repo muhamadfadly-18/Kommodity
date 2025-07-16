@@ -7,9 +7,9 @@ import Footer from "@/app/component/Footer";
 export default function SignUp3() {
   return (
     <>
-        <Navbar></Navbar> 
+   
         <ChooseInterest></ChooseInterest>
-        <Footer></Footer>  
+
     
     </>
   );

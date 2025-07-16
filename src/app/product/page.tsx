@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const localProducts = [
   {
@@ -167,9 +167,31 @@ const categoryTree = [
 export default function ProductPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [stockFilters, setStockFilters] = useState<string[]>([]);
-  const [expanded, setExpanded] = useState<string | null>("coffee");
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [apiProducts, setApiProducts] = useState<any[]>([]);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // SET DARI URL
+  useEffect(() => {
+    const urlCategory = searchParams.get("category");
+    if (urlCategory) {
+      const found = categoryTree
+        .flatMap((cat) => cat.children)
+        .find((child) => child.value === urlCategory);
+
+      if (found) {
+        setSelectedCategory(found.value);
+        const parentCat = categoryTree.find((cat) =>
+          cat.children.some((child) => child.value === found.value)
+        );
+        if (parentCat) {
+          setExpanded(parentCat.value);
+        }
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchApiProducts = async () => {
@@ -214,29 +236,33 @@ export default function ProductPage() {
         <nav aria-label="breadcrumb" className="mb-3">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="/">Home</a>
+              <a href="/" style={{ color: "#00B8C4" }}>
+                Home
+              </a>
             </li>
-            <li className="breadcrumb-item active" aria-current="page">
+            <li
+              className="breadcrumb-item active"
+              aria-current="page"
+              style={{ color: "#00B8C4" }}
+            >
               Products
             </li>
           </ol>
         </nav>
 
         <div className="row">
-          {/* SIDEBAR FILTER */}
+          {/* SIDEBAR */}
           <div className="col-md-3 mb-4">
             <div className="border rounded p-3 bg-light">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="fw-bold mb-0">Filter</h6>
                 <span
-                  style={{
-                    cursor: "pointer",
-                    color: "#00B8C4",
-                  }}
+                  style={{ cursor: "pointer", color: "#00B8C4" }}
                   className="small fw-medium"
                   onClick={() => {
                     setSelectedCategory("");
                     setStockFilters([]);
+                    setExpanded(null);
                   }}
                 >
                   Reset Filter
@@ -253,38 +279,12 @@ export default function ProductPage() {
                     onClick={() => toggleCategory(cat.value)}
                   >
                     <span className="fw-medium">{cat.label}</span>
-                    <span>
-                      {expanded === cat.value ? (
-                        <svg
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M1.646 10.854a.5.5 0 0 0 .708 0L8 5.207l5.646 5.647a.5.5 0 0 0 .708-.708l-6-6a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 0 .708z"
-                          />
-                        </svg> // ▲ (up)
-                      ) : (
-                        <svg
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-                          />
-                        </svg> // ▼ (down)
-                      )}
-                    </span>
+                    <span>{expanded === cat.value ? "▲" : "▼"}</span>
                   </div>
 
                   {expanded === cat.value && (
                     <div className="ms-3 mt-2">
-                      {cat.children.map((sub: any) => (
+                      {cat.children.map((sub) => (
                         <div className="form-check" key={sub.value}>
                           <input
                             className="form-check-input"
@@ -297,7 +297,6 @@ export default function ProductPage() {
                           <label
                             className="form-check-label"
                             htmlFor={sub.value}
-                            style={{ cursor: "pointer" }}
                           >
                             {sub.label}
                           </label>
@@ -307,13 +306,6 @@ export default function ProductPage() {
                   )}
                 </div>
               ))}
-
-              <button
-                className="btn btn-sm btn-outline-secondary mt-2"
-                onClick={() => setSelectedCategory("")}
-              >
-                Tampilkan Semua
-              </button>
 
               <hr />
               <p className="fw-semibold mb-2">Stock</p>
@@ -344,67 +336,37 @@ export default function ProductPage() {
             </p>
 
             <div className="row">
-              {localProducts.filter(filterBy).map((product) => (
-                <div className="col-6 col-md-3 mb-4" key={product.id}>
-                  <div
-                    className="card h-100 shadow-sm"
-                    onClick={() => handleClick(product.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src={product.image}
-                      className="card-img-top"
-                      alt={product.name}
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                    <div className="card-body">
-                      <h6 className="card-title">{product.name}</h6>
-                      <small
-                        style={{
-                          color:
-                            product.stockStatus === "Ready Stock"
-                              ? "#00B8C4"
-                              : "#F59E0B",
-                        }}
-                      >
-                        {product.stockStatus}
-                      </small>
+              {[...localProducts, ...apiProducts]
+                .filter(filterBy)
+                .map((product) => (
+                  <div className="col-6 col-md-3 mb-4" key={product.id}>
+                    <div
+                      className="card h-100 shadow-sm"
+                      onClick={() => handleClick(product.id)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={product.image}
+                        className="card-img-top"
+                        alt={product.name}
+                        style={{ height: "200px", objectFit: "cover" }}
+                      />
+                      <div className="card-body">
+                        <h6 className="card-title">{product.name}</h6>
+                        <small
+                          style={{
+                            color:
+                              product.stockStatus === "Ready Stock"
+                                ? "#00B8C4"
+                                : "#F59E0B",
+                          }}
+                        >
+                          {product.stockStatus}
+                        </small>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="row">
-              {apiProducts.filter(filterBy).map((product) => (
-                <div className="col-6 col-md-3 mb-4" key={product.id}>
-                  <div
-                    className="card h-100 shadow-sm"
-                    onClick={() => handleClick(product.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src={product.image}
-                      className="card-img-top"
-                      alt={product.name}
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                    <div className="card-body">
-                      <h6 className="card-title">{product.name}</h6>
-                      <small
-                        style={{
-                          color:
-                            product.stockStatus === "Ready Stock"
-                              ? "#00B8C4"
-                              : "#F59E0B",
-                        }}
-                      >
-                        {product.stockStatus}
-                      </small>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import Footer from "@/app/component/Footer";
 export default function Login() {
   return (
     <>
-        <Navbar></Navbar> 
+ 
         <div className="h-100">
             <div className="row">
                 <div className="col-lg-6">
@@ -19,7 +19,7 @@ export default function Login() {
                 </div>  
             </div>      
         </div>
-        <Footer></Footer>  
+
     
     </>
   );
