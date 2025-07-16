@@ -9,15 +9,16 @@ import Login from "./pages/Login/page";
 import BannerCarouselHome from "./component/BannerCarousellHome";
 
 
+
 export default function Home() {
   return (
     <>
-      <Navbar></Navbar>
+      {/* <Navbar></Navbar> */}
       <BannerCarouselHome></BannerCarouselHome>
       <ProductCategory></ProductCategory>
       <Bestseller></Bestseller>
       <ContactDetail></ContactDetail>
-      <Footer></Footer>
+      {/* <Footer></Footer> */}
     </>
   );
 }

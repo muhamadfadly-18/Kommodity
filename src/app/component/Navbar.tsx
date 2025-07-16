@@ -9,7 +9,7 @@ export default function Navbar() {
     <header className="shadow-sm py-3 bg-white">
       <div
         className="container"
-        style={{ maxWidth: "1100px", paddingLeft: "10px", paddingRight: "10px" }}
+        style={{ maxWidth: "1330px", paddingLeft: "10px", paddingRight: "10px" }}
       >
         <div className="row align-items-center justify-content-between">
           {/* Logo */}
