@@ -23,6 +23,7 @@ export default function ProductDetail() {
   };
 
   useEffect(() => {
+     setLoading(true);
     fetch(`http://localhost:8000/api/product-category-sub/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -32,17 +33,32 @@ export default function ProductDetail() {
           const imagePath = `${data.data.product_category.table_product.thumbnail}`;
           setMainMedia(imagePath);
         } else {
-          notFound();
+           setProduct(null);
         }
         setLoading(false);
       })
       .catch(() => {
-        notFound();
+      //  console.error("Fetch error:", err);
+      setProduct(null); // Error juga dianggap tidak ada data
+      setLoading(false);
       });
   }, [id]);
 
-  if (loading || !product)
-    return <div className="container py-5">Loading...</div>;
+if (loading) {
+  return <div className="container py-5">Loading...</div>;
+}
+
+if (!product) {
+  return (
+    <div className="container py-5 text-center text-muted">
+      <h4>Data tidak ada.</h4>
+      <Link href="/product" className="btn btn-secondary mt-3">
+        Kembali ke Produk
+      </Link>
+    </div>
+  );
+}
+
 
   const renderMainMedia = () => {
     if (mainMedia.endsWith(".mp4")) {
@@ -101,83 +117,84 @@ export default function ProductDetail() {
 
           {/* THUMBNAIL GALLERY */}
           {product.foto_product && product.foto_product.length > 0 && (
-  <div className="d-flex flex-wrap gap-2">
-    {product.foto_product.slice(0, 6).map((item: string, index: number) => (
-      <div key={index}>
-        {item.endsWith(".mp4") ? (
-          <div
-            className="position-relative"
-            style={{
-              cursor: "pointer",
-              width: "180px",
-              height: "180px",
-              overflow: "hidden",
-              borderRadius: "8px",
-            }}
-            onClick={() => setMainMedia(item)}
-          >
-            <video
-              src={item}
-              className="img-fluid"
-              style={{
-                objectFit: "cover",
-                width: "100%",
-                height: "100%",
-                backgroundColor: "#000",
-              }}
-              muted
-              playsInline
-            />
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                fontSize: "24px",
-                color: "#fff",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                borderRadius: "50%",
-                width: "40px",
-                height: "40px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              ▶
+            <div className="d-flex flex-wrap gap-2">
+              {product.foto_product
+                .slice(0, 6)
+                .map((item: string, index: number) => (
+                  <div key={index}>
+                    {item.endsWith(".mp4") ? (
+                      <div
+                        className="position-relative"
+                        style={{
+                          cursor: "pointer",
+                          width: "180px",
+                          height: "180px",
+                          overflow: "hidden",
+                          borderRadius: "8px",
+                        }}
+                        onClick={() => setMainMedia(item)}
+                      >
+                        <video
+                          src={item}
+                          className="img-fluid"
+                          style={{
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "#000",
+                          }}
+                          muted
+                          playsInline
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            fontSize: "24px",
+                            color: "#fff",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            borderRadius: "50%",
+                            width: "40px",
+                            height: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          ▶
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          width: "180px",
+                          height: "180px",
+                          overflow: "hidden",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setMainMedia(item)}
+                      >
+                        <Image
+                          src={item}
+                          alt={`Thumbnail ${index}`}
+                          width={160}
+                          height={160}
+                          style={{
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                          className="img-fluid"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              width: "180px",
-              height: "180px",
-              overflow: "hidden",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
-            onClick={() => setMainMedia(item)}
-          >
-            <Image
-              src={item}
-              alt={`Thumbnail ${index}`}
-              width={160}
-              height={160}
-              style={{
-                objectFit: "cover",
-                width: "100%",
-                height: "100%",
-              }}
-              className="img-fluid"
-            />
-          </div>
-        )}
-      </div>
-    ))}
-  </div>
-)}
-
+          )}
         </div>
 
         {/* RIGHT */}
